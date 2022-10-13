@@ -1,5 +1,6 @@
 package com.eatthefrog.UserService.model.okta;
 
+import com.eatthefrog.UserService.model.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
