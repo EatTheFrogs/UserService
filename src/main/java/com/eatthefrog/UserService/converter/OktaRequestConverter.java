@@ -1,5 +1,6 @@
 package com.eatthefrog.UserService.converter;
 
+import com.eatthefrog.UserService.model.User;
 import com.eatthefrog.UserService.model.okta.*;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +11,10 @@ import java.util.stream.Stream;
 @Component
 public class OktaRequestConverter {
 
-    public OktaUser getOktaUserFromOktaRequest(OktaRequest request) {
-        OktaRequestEventTarget target = Optional.ofNullable(request.getData())
+    private static final String OKTA_USER_TYPE = "User";
+
+    public User getUserFromOktaRequest(OktaRequest request) {
+        OktaRequestEventTarget eventTarget = Optional.ofNullable(request.getData())
                 .map(OktaRequestData::getEvents)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
@@ -19,13 +22,14 @@ public class OktaRequestConverter {
                 .map(OktaRequestEvent::getTarget)
                 .map(List::stream)
                 .orElseGet(Stream::empty)
+                .filter(target -> OKTA_USER_TYPE.equalsIgnoreCase(target.getType()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Failed to parse user in Okta create hook:\n"+request.toString()));
 
-        return OktaUser.builder()
-                .oktaUUID(Optional.ofNullable(target.getId()).get())
-                .email(Optional.ofNullable(target.getAlternateId()).get())
-                .name(Optional.ofNullable(target.getDisplayName()).get())
+        return User.builder()
+                .uuid(Optional.ofNullable(eventTarget.getId()).get())
+                .email(Optional.ofNullable(eventTarget.getAlternateId()).get())
+                .name(Optional.ofNullable(eventTarget.getDisplayName()).get())
                 .build();
     }
 }
