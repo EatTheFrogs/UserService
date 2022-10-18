@@ -4,6 +4,7 @@ import com.eatthefrog.UserService.model.User;
 import com.eatthefrog.UserService.model.okta.*;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -27,9 +28,10 @@ public class OktaRequestConverter {
                 .orElseThrow(() -> new RuntimeException("Failed to parse user in Okta create hook:\n"+request.toString()));
 
         return User.builder()
-                .uuid(Optional.ofNullable(eventTarget.getId()).get())
-                .email(Optional.ofNullable(eventTarget.getAlternateId()).get())
-                .name(Optional.ofNullable(eventTarget.getDisplayName()).get())
+                .uuid(Optional.ofNullable(eventTarget.getId()).orElseThrow(() -> new RuntimeException("No uuid found in Okta request.")))
+                .email(Optional.ofNullable(eventTarget.getAlternateId()).orElseGet(() -> null))
+                .name(Optional.ofNullable(eventTarget.getDisplayName()).orElseGet(() -> null))
+                .createdDate(Optional.ofNullable(ZonedDateTime.parse(request.getEventTime())).orElseGet(() -> null))
                 .build();
     }
 }
