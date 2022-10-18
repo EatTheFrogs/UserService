@@ -21,6 +21,6 @@ public class DateReadingConverter implements Converter<Date, ZonedDateTime> {
             return null;
         }
 
-        return ZonedDateTime.from(date.toInstant()).withZoneSameInstant(ZoneId.of("UTC"));
+        return ZonedDateTime.from(date.toInstant().atZone(ZoneId.of("UTC")));
     }
 }
