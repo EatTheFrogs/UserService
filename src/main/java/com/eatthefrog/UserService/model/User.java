@@ -10,12 +10,12 @@ import java.time.ZonedDateTime;
 
 @Data
 @Builder
-@Document(collection = "goals")
+@Document(collection = "user")
 public class User implements Serializable {
 
     @Id
     private String uuid;
-    private String email;
-    private String name;
     private ZonedDateTime createdDate;
+    private String name;
+    private String email;
 }
